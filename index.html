@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Relativity-Simulator</title>
+    <style>
+      * {
+        box-sizing: border-box;
+        color: white;
+        font-family: sans-serif;
+      }
+      html {
+        background-color: black;
+      }
+      body {
+        margin: 0;
+        padding: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: black;
+      }
+      canvas {
+        width: 100%;
+        height: 100%;
+        display: block;
+      }
+      .float {
+        position: fixed;
+        width: 500px;
+        height: 300px;
+        resize: both;
+        overflow: auto;
+        border: 1px solid white;
+      }
+      .dragger {
+        position: absolute;
+        left: 3px;
+        bottom: 3px;
+        color: white;
+        cursor: grab;
+      }
+      #add {
+        position: fixed;
+        right: 20px;
+        bottom: 20px;
+        font-size: 40px;
+        background-color: white;
+        color: black;
+        padding: 10px;
+        border-radius: 15px;
+      }
+      .material-symbols-outlined {
+        cursor: pointer;
+        user-select: none;
+      }
+      .buttonsContainer {
+        display: flex;
+        flex-direction: row;
+        gap: 10px;
+        position: absolute;
+        top: 0px;
+        left: 50%;
+        transform: translate(-50%, 0);
+        width: auto;
+        height: auto;
+      }
+      #frames {
+        width: 380px;
+        height: 300px;
+        position: fixed;
+        right: 10px;
+        top: 10px;
+        border-radius: 10px;
+        border: 1px solid white;
+        overflow-y: auto;
+        overflow-x: hidden;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+      .timer {
+        position: absolute;
+        left: 10px;
+        top: 0px;
+        font-size: 20px;
+      }
+      .frameContainer {
+        height: auto;
+        padding-left: 20px;
+      }
+      .index {
+        position: absolute;
+        right: 20px;
+        top: 0px;
+        font-size: 20px;
+      }
+      input {
+        background-color: transparent;
+        border: 1px solid white;
+        border-radius: 5px;
+        width: 60px;
+        margin-right: 5px;
+      }
+    </style>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+    />
+    <script src="bundle.js" async></script>
+  </head>
+  <body>
+    <div id="frames">
+      <!-- <form class="frameContainer">
+        <div>
+          <span>가로/세로(m)</span>
+          <input type="number" name="width" />
+          <input type="number" name="height" />
+        </div>
+        <span>이동 각도(도)</span>
+        <input type="number" name="angle" />
+        <span>이동 크기(m)</span>
+        <input type="number" name="size" />
+      </form> -->
+    </div>
+    <span class="material-symbols-outlined" id="add"> add </span>
+  </body>
+</html>
