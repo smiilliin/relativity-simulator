@@ -65,7 +65,7 @@
         width: auto;
         height: auto;
       }
-      #frames {
+      #framesContainer {
         width: 380px;
         height: 300px;
         position: fixed;
@@ -73,11 +73,20 @@
         top: 10px;
         border-radius: 10px;
         border: 1px solid white;
+        display: grid;
+        grid-template-rows: 1fr 30px;
+      }
+      #frames {
+        display: flex;
         overflow-y: auto;
         overflow-x: hidden;
         display: flex;
         flex-direction: column;
+        padding-bottom: 10px;
         gap: 20px;
+      }
+      #restart {
+        font-size: 30px;
       }
       .timer {
         position: absolute;
@@ -99,8 +108,13 @@
         background-color: transparent;
         border: 1px solid white;
         border-radius: 5px;
-        width: 60px;
+        width: 40px;
         margin-right: 5px;
+      }
+      input::-webkit-outer-spin-button,
+      input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
       }
     </style>
     <link
@@ -110,19 +124,12 @@
     <script src="bundle.js" async></script>
   </head>
   <body>
-    <div id="frames">
-      <!-- <form class="frameContainer">
-        <div>
-          <span>가로/세로(m)</span>
-          <input type="number" name="width" />
-          <input type="number" name="height" />
-        </div>
-        <span>이동 각도(도)</span>
-        <input type="number" name="angle" />
-        <span>이동 크기(m)</span>
-        <input type="number" name="size" />
-      </form> -->
+    <div id="framesContainer">
+      <div id="frames"></div>
+      <div style="margin-left: auto; display: flex; gap: 20px">
+        <span class="material-symbols-outlined" id="restart">restart_alt</span>
+      </div>
     </div>
-    <span class="material-symbols-outlined" id="add"> add </span>
+    <span class="material-symbols-outlined" id="add">add</span>
   </body>
 </html>

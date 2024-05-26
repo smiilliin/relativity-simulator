@@ -24,6 +24,12 @@ class Vector2 {
 
 const c = 299792458;
 
+interface IGamma {
+  g: number;
+  gx: number;
+  gy: number;
+}
+
 class InertialFrame {
   velocity: Vector2;
   initialVector: Vector2;
@@ -35,19 +41,25 @@ class InertialFrame {
   observe(
     invertedMatrix: Matrix,
     relativeVector: Vector2,
-    t: number
+    gamma: IGamma,
+    t: number,
+    offset?: Vector2
   ): { t: number; vector: Vector2 } {
-    const result = invertedMatrix.mmul(Matrix.columnVector([t * c, 0, 0]));
+    const result = invertedMatrix.mmul(
+      Matrix.columnVector([(t * c) / gamma.g, 0, 0])
+    );
 
     return {
-      t: result.get(0, 0) / c,
-      vector: new Vector2(result.get(1, 0), result.get(2, 0)).add(
-        relativeVector
-      ),
+      t: t / gamma.g,
+      vector: new Vector2(result.get(1, 0), result.get(2, 0))
+        .add(
+          new Vector2((offset?.x || 0) / gamma.gx, (offset?.y || 0) / gamma.gy)
+        )
+        .add(relativeVector),
     };
   }
   getRelativeVector(other: InertialFrame): Vector2 {
-    const matrix = this.lorentz();
+    const { matrix } = this.lorentz();
     const relativeVector = other.initialVector.subtract(this.initialVector);
     const result = matrix.mmul(
       Matrix.columnVector([0, relativeVector.x, relativeVector.y])
@@ -55,7 +67,7 @@ class InertialFrame {
 
     return new Vector2(result.get(1, 0), result.get(2, 0));
   }
-  lorentz(other?: InertialFrame): Matrix {
+  lorentz(other?: InertialFrame): { matrix: Matrix; gamma: IGamma } {
     const relativeVelocity =
       other?.velocity.subtract(this.velocity) || new Vector2(0, 0);
 
@@ -78,8 +90,12 @@ class InertialFrame {
       [-gy * by, 0, gy],
     ]);
 
-    return maty.mmul(matx);
+    const v = Math.sqrt(vx * vx + vy * vy);
+    const b = v / c;
+    const g = 1 / Math.sqrt(1 - b * b);
+
+    return { matrix: maty.mmul(matx), gamma: { g: g, gx: gx, gy: gy } };
   }
 }
 
-export { InertialFrame, Vector2, c };
+export { InertialFrame, Vector2, c, IGamma };
