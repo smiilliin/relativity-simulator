@@ -26,4 +26,7 @@ npm run build
 
 Pole and Barn Paradox
 
-https://github.com/smiilliin/relativity-simulator/assets/121614843/d653c1a3-2fad-42e8-956c-5d552b55c322
+
+https://github.com/smiilliin/relativity-simulator/assets/121614843/1ea43da4-c242-4521-93c2-c9a55951590f
+
+
