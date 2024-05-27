@@ -165,6 +165,10 @@ function makeScreen(
       app.destroy();
       framesDiv.removeChild(frameContainer);
       document.body.removeChild(container);
+      graphics.forEach((graphic) => view.removeChild(graphic));
+      texts.forEach((textsArray) =>
+        textsArray.forEach((text) => view.removeChild(text))
+      );
       frames.delete(index);
       frames.forEach((frame) => frame.onUpdate());
     };
@@ -225,6 +229,7 @@ function makeScreen(
   const offsets: Map<number, Vector2[]> = new Map();
   const gs: Map<number, IGamma> = new Map();
   const graphics: Map<number, PIXI.Graphics> = new Map();
+  const texts: Map<number, PIXI.Text[]> = new Map();
 
   const ticker = (ct: number, relativeCTs?: Map<number, number>) => {
     timer.textContent = `ct=${ct.toFixed(2)}`;
@@ -233,34 +238,47 @@ function makeScreen(
       graphic.clear();
       graphic.lineStyle(3, 0xffffff);
 
+      const matrix = matrices.get(i) as Matrix;
       const invmatrix = invmatrices.get(i) as Matrix;
       const relativeVector = relativeVectors.get(i) as Vector2;
       const offsetsArray = offsets.get(i) as Vector2[];
+      const textsArray = texts.get(i) as PIXI.Text[];
 
       const g = gs.get(i) as IGamma;
 
-      const { t: relativeT, vector: vector1 } = inertialFrame.observe(
+      const { t: relativeT } = inertialFrame.observe(
+        matrix,
+        invmatrix,
+        relativeVector,
+        g,
+        ct / c
+      );
+      const { t: relativeT1, vector: vector1 } = inertialFrame.observe(
+        matrix,
         invmatrix,
         relativeVector,
         g,
         ct / c,
         offsetsArray[0]
       );
-      const { vector: vector2 } = inertialFrame.observe(
+      const { t: relativeT2, vector: vector2 } = inertialFrame.observe(
+        matrix,
         invmatrix,
         relativeVector,
         g,
         ct / c,
         offsetsArray[1]
       );
-      const { vector: vector3 } = inertialFrame.observe(
+      const { t: relativeT3, vector: vector3 } = inertialFrame.observe(
+        matrix,
         invmatrix,
         relativeVector,
         g,
         ct / c,
         offsetsArray[2]
       );
-      const { vector: vector4 } = inertialFrame.observe(
+      const { t: relativeT4, vector: vector4 } = inertialFrame.observe(
+        matrix,
         invmatrix,
         relativeVector,
         g,
@@ -269,6 +287,23 @@ function makeScreen(
       );
 
       relativeCTs?.set(i, relativeT * c);
+
+      // console.log(relativeT3 * c - relativeT * c);
+
+      if (i != index && i != 0) {
+        textsArray[0].x = vector1.x * 20;
+        textsArray[0].y = -vector1.y * 20;
+        textsArray[0].text = `ct'=${(relativeT1 * c).toFixed(2)}`;
+        textsArray[1].x = vector2.x * 20;
+        textsArray[1].y = -vector2.y * 20;
+        textsArray[1].text = `ct'=${(relativeT2 * c).toFixed(2)}`;
+        textsArray[2].x = vector3.x * 20;
+        textsArray[2].y = -vector3.y * 20;
+        textsArray[2].text = `ct'=${(relativeT3 * c).toFixed(2)}`;
+        textsArray[3].x = vector4.x * 20;
+        textsArray[3].y = -vector4.y * 20;
+        textsArray[3].text = `ct'=${(relativeT4 * c).toFixed(2)}`;
+      }
 
       graphic.moveTo(vector1.x * 20, -vector1.y * 20);
       graphic.lineTo(vector2.x * 20, -vector2.y * 20);
@@ -281,6 +316,10 @@ function makeScreen(
     matrices.clear();
     invmatrices.clear();
     graphics.forEach((graphic) => view.removeChild(graphic));
+    texts.forEach((textsArray) =>
+      textsArray.forEach((text) => view.removeChild(text))
+    );
+    texts.clear();
     graphics.clear();
 
     frames.forEach((frame, i) => {
@@ -312,8 +351,20 @@ function makeScreen(
       offsets.set(i, offsetsArray);
 
       const graphic = new PIXI.Graphics();
+      const textsArray: PIXI.Text[] = [
+        new PIXI.Text("", { fontSize: 15, fill: 0xffffff }),
+        new PIXI.Text("", { fontSize: 15, fill: 0xffffff }),
+        new PIXI.Text("", { fontSize: 15, fill: 0xffffff }),
+        new PIXI.Text("", { fontSize: 15, fill: 0xffffff }),
+      ];
       graphics.set(i, graphic);
+      if (index != i) {
+        texts.set(i, textsArray);
+      }
       view.addChild(graphic);
+      textsArray.forEach((text) => {
+        view.addChild(text);
+      });
     });
   };
 
@@ -426,3 +477,11 @@ document.getElementById("restart")!.onclick = () => {
 };
 
 makeScreen(currentIndex++);
+
+window.addEventListener(
+  "wheel",
+  (e) => {
+    e.preventDefault();
+  },
+  { passive: false }
+);

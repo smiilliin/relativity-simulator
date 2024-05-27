@@ -39,6 +39,7 @@ class InertialFrame {
     this.initialVector = initialVector.clone();
   }
   observe(
+    matrix: Matrix,
     invertedMatrix: Matrix,
     relativeVector: Vector2,
     gamma: IGamma,
@@ -48,14 +49,22 @@ class InertialFrame {
     const result = invertedMatrix.mmul(
       Matrix.columnVector([(t * c) / gamma.g, 0, 0])
     );
+    let resultT = t / gamma.g;
+    const resultVector = new Vector2(result.get(1, 0), result.get(2, 0)).add(
+      new Vector2((offset?.x || 0) / gamma.gx, (offset?.y || 0) / gamma.gy)
+    );
+
+    if (offset?.x != 0 || offset?.y != 0) {
+      const result2 = matrix.mmul(
+        Matrix.columnVector([t * c, resultVector.x, resultVector.y])
+      );
+
+      resultT = result2.get(0, 0) / c;
+    }
 
     return {
-      t: t / gamma.g,
-      vector: new Vector2(result.get(1, 0), result.get(2, 0))
-        .add(
-          new Vector2((offset?.x || 0) / gamma.gx, (offset?.y || 0) / gamma.gy)
-        )
-        .add(relativeVector),
+      t: resultT,
+      vector: resultVector.add(relativeVector),
     };
   }
   getRelativeVector(other: InertialFrame): Vector2 {
